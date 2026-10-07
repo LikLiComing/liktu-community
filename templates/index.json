@@ -72,8 +72,18 @@
       "updatedAt": "2026-10-07"
     },
     {
+      "id": "smart-space-operations-architecture",
+      "name": "智慧空间协同运营 · 调度系统架构",
+      "kind": "flow",
+      "format": "drawio",
+      "description": "展示规划调度服务、资源与任务缓存、OptaPlanner 求解集群、工单服务和基础数据链路。",
+      "file": "templates/flow/smart-space-operations-architecture.drawio",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-07"
+    },
+    {
       "id": "property-service-agent-er",
-      "name": "物业服务 AI Agent · ER 模型",
+      "name": "服务行业 AI Agent · ER 模型",
       "kind": "er",
       "format": "dbml",
       "description": "涵盖多渠道会话、Agent 执行节点、RAG 知识切片、受控工具调用与服务工单。",
@@ -83,7 +93,7 @@
     },
     {
       "id": "property-service-agent-flow",
-      "name": "物业服务 AI Agent · 编排流程",
+      "name": "服务行业 AI Agent · 编排流程",
       "kind": "flow",
       "format": "mermaid",
       "description": "以 Agent 多分支编排为核心，展示会话记忆、RAG 检索、业务工具调用、重试和转人工。",

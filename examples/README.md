@@ -17,7 +17,7 @@
 - `../templates/er/smart-space-operations.dbml`：空间、设备、位置事件、工单、排程方案和派工关系。
 - `../templates/flow/smart-space-operations.mmd`：从多源事件到动态约束排程、执行反馈和重排。
 
-## 物业服务 AI Agent
+## 服务行业 AI Agent
 
 - [案例说明](property-service-agent.md)：聚焦 LangChain4j、LangGraph4j、多分支 Agent 编排、RAG 与受控工具调用。
 - `../templates/er/property-service-agent.dbml`：会话、Agent 节点、知识切片、工具调用及工单。
