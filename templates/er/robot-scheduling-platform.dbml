@@ -1,142 +1,156 @@
 Enum robot_status {
-  idle
-  busy
-  charging
-  offline
+  idle [note: '空闲，可接任务']
+  busy [note: '执行中']
+  charging [note: '充电中']
+  offline [note: '离线']
 }
 
 Enum task_status {
-  queued
-  bidding
-  dispatched
-  executing
-  completed
-  failed
-  cancelled
+  queued [note: '已入队，等待竞价']
+  bidding [note: '车队竞价中']
+  dispatched [note: '已派给机器人']
+  executing [note: '正在执行']
+  completed [note: '已完成']
+  failed [note: '执行失败']
+  cancelled [note: '已取消']
 }
 
 Enum resource_type {
-  door
-  lift
+  door [note: '门禁']
+  lift [note: '电梯']
 }
 
 Enum reservation_status {
-  requested
-  granted
-  active
-  released
-  denied
+  requested [note: '已申请']
+  granted [note: '已批准']
+  active [note: '占用中']
+  released [note: '已释放']
+  denied [note: '已拒绝']
 }
 
 Table facilities [headercolor: #0f766e] {
-  id int [pk, increment]
-  name varchar(120) [not null]
-  status varchar(24) [not null, default: 'active']
+  id int [pk, increment, note: '场地主键']
+  name varchar(120) [not null, note: '场地名称']
+  status varchar(24) [not null, default: 'active', note: '场地是否开放调度']
 
   Note: '机器人运行的场地或园区'
 }
 
 Table floors {
-  id int [pk, increment]
-  facility_id int [not null, ref: > facilities.id]
-  name varchar(80) [not null]
-  level_order int [not null]
+  id int [pk, increment, note: '楼层主键']
+  facility_id int [not null, ref: > facilities.id, note: '所属场地']
+  name varchar(80) [not null, note: '楼层名称']
+  level_order int [not null, note: '楼层顺序，用于电梯衔接']
+
+  Note: '场地中的一层，地图按楼层分开维护'
 }
 
 Table maps {
-  id int [pk, increment]
-  floor_id int [not null, ref: > floors.id]
-  name varchar(120) [not null]
-  version int [not null, default: 1]
+  id int [pk, increment, note: '地图主键']
+  floor_id int [not null, ref: > floors.id, note: '所属楼层']
+  name varchar(120) [not null, note: '地图名称']
+  version int [not null, default: 1, note: '地图版本，更新后递增']
+
+  Note: '某一楼层的导航地图'
 }
 
 Table waypoints {
-  id int [pk, increment]
-  map_id int [not null, ref: > maps.id]
-  name varchar(120) [not null]
-  x decimal(10,3)
-  y decimal(10,3)
-  is_charger boolean [not null, default: false]
+  id int [pk, increment, note: '路点主键']
+  map_id int [not null, ref: > maps.id, note: '所属地图']
+  name varchar(120) [not null, note: '路点名称，如拣货点、充电桩']
+  x decimal(10,3) [note: '地图坐标 X']
+  y decimal(10,3) [note: '地图坐标 Y']
+  is_charger boolean [not null, default: false, note: '是否为充电点']
+
+  Note: '机器人可到达或停留的位置'
 }
 
 Table lanes {
-  id int [pk, increment]
-  map_id int [not null, ref: > maps.id]
-  from_waypoint_id int [not null, ref: > waypoints.id]
-  to_waypoint_id int [not null, ref: > waypoints.id]
-  bidirectional boolean [not null, default: false]
+  id int [pk, increment, note: '路段主键']
+  map_id int [not null, ref: > maps.id, note: '所属地图']
+  from_waypoint_id int [not null, ref: > waypoints.id, note: '起点']
+  to_waypoint_id int [not null, ref: > waypoints.id, note: '终点']
+  bidirectional boolean [not null, default: false, note: '是否允许双向通行']
 
   Note: '地图中的可通行边，调度时用于路径规划与交通协调'
 }
 
 Table fleets {
-  id int [pk, increment]
-  facility_id int [not null, ref: > facilities.id]
-  name varchar(120) [not null]
-  adapter_type varchar(80) [not null]
-  status varchar(24) [not null, default: 'online']
+  id int [pk, increment, note: '车队主键']
+  facility_id int [not null, ref: > facilities.id, note: '服务的场地']
+  name varchar(120) [not null, note: '车队名称']
+  adapter_type varchar(80) [not null, note: '接入适配器类型，用于异构车队']
+  status varchar(24) [not null, default: 'online', note: '车队在线状态']
 
   Note: '通过车队适配器接入平台的异构机器人车队'
 }
 
 Table robots {
-  id int [pk, increment]
-  fleet_id int [not null, ref: > fleets.id]
-  current_waypoint_id int [ref: > waypoints.id]
-  name varchar(120) [not null]
-  model varchar(120)
-  status robot_status [not null, default: 'idle']
-  battery_percent decimal(5,2)
-  last_seen_at timestamp
+  id int [pk, increment, note: '机器人主键']
+  fleet_id int [not null, ref: > fleets.id, note: '所属车队']
+  current_waypoint_id int [ref: > waypoints.id, note: '当前所在路点']
+  name varchar(120) [not null, note: '机器人名称']
+  model varchar(120) [note: '机型']
+  status robot_status [not null, default: 'idle', note: '当前工作状态']
+  battery_percent decimal(5,2) [note: '剩余电量百分比']
+  last_seen_at timestamp [note: '最近一次心跳时间']
+
+  Note: '可接单并上报位置与电量的机器人'
 }
 
 Table tasks {
-  id int [pk, increment]
-  facility_id int [not null, ref: > facilities.id]
-  task_type varchar(80) [not null]
-  priority int [not null, default: 0]
-  status task_status [not null, default: 'queued']
-  requested_at timestamp [not null]
-  description text
+  id int [pk, increment, note: '任务主键']
+  facility_id int [not null, ref: > facilities.id, note: '任务发生的场地']
+  task_type varchar(80) [not null, note: '任务类型，如配送、巡检']
+  priority int [not null, default: 0, note: '优先级，数值越大越优先']
+  status task_status [not null, default: 'queued', note: '任务生命周期状态']
+  requested_at timestamp [not null, note: '请求时间']
+  description text [note: '任务说明，给人与 AI 阅读']
+
+  Note: '需要车队竞价并派发的调度任务'
 }
 
 Table bids {
-  id int [pk, increment]
-  task_id int [not null, ref: > tasks.id]
-  fleet_id int [not null, ref: > fleets.id]
-  estimated_cost decimal(12,2) [not null]
-  estimated_duration_seconds int [not null]
-  status varchar(24) [not null, default: 'proposed']
-  submitted_at timestamp [not null]
+  id int [pk, increment, note: '竞价主键']
+  task_id int [not null, ref: > tasks.id, note: '竞价的任务']
+  fleet_id int [not null, ref: > fleets.id, note: '出价车队']
+  estimated_cost decimal(12,2) [not null, note: '预估成本']
+  estimated_duration_seconds int [not null, note: '预估耗时，单位秒']
+  status varchar(24) [not null, default: 'proposed', note: '竞价状态，如已提议、已中标']
+  submitted_at timestamp [not null, note: '提交时间']
+
+  Note: '车队对任务给出的成本与耗时报价'
 }
 
 Table dispatches {
-  id int [pk, increment]
-  task_id int [not null, unique, ref: > tasks.id]
-  bid_id int [not null, ref: > bids.id]
-  robot_id int [not null, ref: > robots.id]
-  dispatched_at timestamp [not null]
-  completed_at timestamp
+  id int [pk, increment, note: '派发主键']
+  task_id int [not null, unique, ref: > tasks.id, note: '被派发的任务，一任务只派一次']
+  bid_id int [not null, ref: > bids.id, note: '中标的竞价']
+  robot_id int [not null, ref: > robots.id, note: '执行该任务的机器人']
+  dispatched_at timestamp [not null, note: '派发时间']
+  completed_at timestamp [note: '完成时间，未完成为空']
+
+  Note: '任务最终派给哪台机器人执行'
 }
 
 Table shared_resources {
-  id int [pk, increment]
-  facility_id int [not null, ref: > facilities.id]
-  name varchar(120) [not null]
-  resource_type resource_type [not null]
-  status varchar(24) [not null, default: 'available']
+  id int [pk, increment, note: '共享资源主键']
+  facility_id int [not null, ref: > facilities.id, note: '所属场地']
+  name varchar(120) [not null, note: '资源名称，如东门、1 号电梯']
+  resource_type resource_type [not null, note: '门或电梯']
+  status varchar(24) [not null, default: 'available', note: '当前是否可预约']
 
   Note: '供多车队协调使用的门、电梯等建筑资源'
 }
 
 Table traffic_reservations {
-  id int [pk, increment]
-  robot_id int [not null, ref: > robots.id]
-  lane_id int [ref: > lanes.id]
-  shared_resource_id int [ref: > shared_resources.id]
-  starts_at timestamp [not null]
-  ends_at timestamp [not null]
-  status reservation_status [not null, default: 'requested']
+  id int [pk, increment, note: '通行预约主键']
+  robot_id int [not null, ref: > robots.id, note: '申请通行的机器人']
+  lane_id int [ref: > lanes.id, note: '预约的路段，可与共享设施二选一']
+  shared_resource_id int [ref: > shared_resources.id, note: '预约的门或电梯']
+  starts_at timestamp [not null, note: '占用开始时间']
+  ends_at timestamp [not null, note: '占用结束时间']
+  status reservation_status [not null, default: 'requested', note: '预约审批状态']
 
   Note: 'lane_id 与 shared_resource_id 表示一次通行预约涉及的路段或共享设施'
 }
