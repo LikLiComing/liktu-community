@@ -8,7 +8,7 @@
       "format": "dbml",
       "description": "包含用户、商品、订单、订单项和商品状态枚举。表和字段都带中文注释，便于人和 AI 阅读。",
       "file": "templates/er/online-store.dbml",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "updatedAt": "2026-10-07"
     },
     {
@@ -28,7 +28,7 @@
       "format": "dbml",
       "description": "以多车队协同调度为场景，涵盖地图、车队、机器人、任务竞价、派发与通行资源。表、字段和枚举都带中文注释。",
       "file": "templates/er/robot-scheduling-platform.dbml",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "updatedAt": "2026-10-07"
     },
     {

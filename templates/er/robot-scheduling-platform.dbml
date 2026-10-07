@@ -28,7 +28,7 @@ Enum reservation_status {
   denied [note: '已拒绝']
 }
 
-Table facilities [headercolor: #0f766e] {
+Table facilities [headercolor: #0f766e, note: '机器人运行的场地或园区'] {
   id int [pk, increment, note: '场地主键']
   name varchar(120) [not null, note: '场地名称']
   status varchar(24) [not null, default: 'active', note: '场地是否开放调度']
@@ -36,7 +36,7 @@ Table facilities [headercolor: #0f766e] {
   Note: '机器人运行的场地或园区'
 }
 
-Table floors {
+Table floors [note: '场地中的一层，地图按楼层分开维护'] {
   id int [pk, increment, note: '楼层主键']
   facility_id int [not null, ref: > facilities.id, note: '所属场地']
   name varchar(80) [not null, note: '楼层名称']
@@ -45,7 +45,7 @@ Table floors {
   Note: '场地中的一层，地图按楼层分开维护'
 }
 
-Table maps {
+Table maps [note: '某一楼层的导航地图'] {
   id int [pk, increment, note: '地图主键']
   floor_id int [not null, ref: > floors.id, note: '所属楼层']
   name varchar(120) [not null, note: '地图名称']
@@ -54,7 +54,7 @@ Table maps {
   Note: '某一楼层的导航地图'
 }
 
-Table waypoints {
+Table waypoints [note: '机器人可到达或停留的位置'] {
   id int [pk, increment, note: '路点主键']
   map_id int [not null, ref: > maps.id, note: '所属地图']
   name varchar(120) [not null, note: '路点名称，如拣货点、充电桩']
@@ -65,7 +65,7 @@ Table waypoints {
   Note: '机器人可到达或停留的位置'
 }
 
-Table lanes {
+Table lanes [note: '地图中的可通行边，调度时用于路径规划与交通协调'] {
   id int [pk, increment, note: '路段主键']
   map_id int [not null, ref: > maps.id, note: '所属地图']
   from_waypoint_id int [not null, ref: > waypoints.id, note: '起点']
@@ -75,7 +75,7 @@ Table lanes {
   Note: '地图中的可通行边，调度时用于路径规划与交通协调'
 }
 
-Table fleets {
+Table fleets [note: '通过车队适配器接入平台的异构机器人车队'] {
   id int [pk, increment, note: '车队主键']
   facility_id int [not null, ref: > facilities.id, note: '服务的场地']
   name varchar(120) [not null, note: '车队名称']
@@ -85,7 +85,7 @@ Table fleets {
   Note: '通过车队适配器接入平台的异构机器人车队'
 }
 
-Table robots {
+Table robots [note: '可接单并上报位置与电量的机器人'] {
   id int [pk, increment, note: '机器人主键']
   fleet_id int [not null, ref: > fleets.id, note: '所属车队']
   current_waypoint_id int [ref: > waypoints.id, note: '当前所在路点']
@@ -98,7 +98,7 @@ Table robots {
   Note: '可接单并上报位置与电量的机器人'
 }
 
-Table tasks {
+Table tasks [note: '需要车队竞价并派发的调度任务'] {
   id int [pk, increment, note: '任务主键']
   facility_id int [not null, ref: > facilities.id, note: '任务发生的场地']
   task_type varchar(80) [not null, note: '任务类型，如配送、巡检']
@@ -110,7 +110,7 @@ Table tasks {
   Note: '需要车队竞价并派发的调度任务'
 }
 
-Table bids {
+Table bids [note: '车队对任务给出的成本与耗时报价'] {
   id int [pk, increment, note: '竞价主键']
   task_id int [not null, ref: > tasks.id, note: '竞价的任务']
   fleet_id int [not null, ref: > fleets.id, note: '出价车队']
@@ -122,7 +122,7 @@ Table bids {
   Note: '车队对任务给出的成本与耗时报价'
 }
 
-Table dispatches {
+Table dispatches [note: '任务最终派给哪台机器人执行'] {
   id int [pk, increment, note: '派发主键']
   task_id int [not null, unique, ref: > tasks.id, note: '被派发的任务，一任务只派一次']
   bid_id int [not null, ref: > bids.id, note: '中标的竞价']
@@ -133,7 +133,7 @@ Table dispatches {
   Note: '任务最终派给哪台机器人执行'
 }
 
-Table shared_resources {
+Table shared_resources [note: '供多车队协调使用的门、电梯等建筑资源'] {
   id int [pk, increment, note: '共享资源主键']
   facility_id int [not null, ref: > facilities.id, note: '所属场地']
   name varchar(120) [not null, note: '资源名称，如东门、1 号电梯']
@@ -143,7 +143,7 @@ Table shared_resources {
   Note: '供多车队协调使用的门、电梯等建筑资源'
 }
 
-Table traffic_reservations {
+Table traffic_reservations [note: '一次通行预约涉及的路段或共享设施'] {
   id int [pk, increment, note: '通行预约主键']
   robot_id int [not null, ref: > robots.id, note: '申请通行的机器人']
   lane_id int [ref: > lanes.id, note: '预约的路段，可与共享设施二选一']

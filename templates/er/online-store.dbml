@@ -1,4 +1,4 @@
-Table users [headercolor: #2563eb] {
+Table users [headercolor: #2563eb, note: '注册用户'] {
   id int [pk, increment, note: '用户主键']
   email varchar(255) [unique, not null, note: '登录邮箱']
   name varchar [not null, note: '显示名称']
@@ -13,7 +13,7 @@ Enum product_status {
   archived [note: '已下架']
 }
 
-Table products {
+Table products [note: '在售商品'] {
   id int [pk, increment, note: '商品主键']
   name varchar [not null, note: '商品名称']
   price decimal(10,2) [not null, note: '销售单价']
@@ -22,7 +22,7 @@ Table products {
   Note: '在售商品'
 }
 
-Table orders {
+Table orders [note: '用户下单后的订单头'] {
   id int [pk, increment, note: '订单主键']
   user_id int [not null, ref: > users.id, note: '下单用户']
   status varchar [not null, note: '订单状态，如待支付、已发货']
@@ -36,7 +36,7 @@ Table orders {
   Note: '用户下单后的订单头'
 }
 
-Table order_items {
+Table order_items [note: '订单中的一行商品'] {
   id int [pk, increment, note: '订单项主键']
   order_id int [not null, ref: > orders.id, note: '所属订单']
   product_id int [not null, ref: > products.id, note: '购买的商品']
