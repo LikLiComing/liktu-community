@@ -1,0 +1,45 @@
+%%{init: {"flowchart": {"curve": "basis"}}}%%
+flowchart TD
+  start([设备上报])
+  ingress[/网络组件接收报文/]
+  gateway[设备网关按接入方式接收]
+  decode{协议解码成功?}
+  failed[记录解码失败]
+  session[建立或刷新设备会话]
+  enrich[按产品和设备补齐消息上下文]
+  publish[发布到设备消息总线]
+  kind{消息类型?}
+  register[按产品自动注册设备]
+  child[绑定或解绑子设备]
+  derived[更新设备派生物模型]
+  online[缓冲同步在线或离线状态]
+  store[按产品存储策略写入属性事件和日志]
+  latest[可选回写设备最新数据]
+  scene{命中已启用场景?}
+  alarm[写入或更新告警记录]
+  notice[按通知配置和模板发送]
+  done([处理完成])
+  stored[完成本次落库]
+
+  start --> ingress
+  ingress --> gateway
+  gateway --> decode
+  decode -->|否| failed
+  decode -->|是| session
+  session --> enrich
+  enrich --> publish
+  publish --> kind
+  kind -->|注册| register
+  kind -->|子设备| child
+  kind -->|派生物模型| derived
+  kind -->|状态或数据| online
+  register --> store
+  child --> store
+  derived --> store
+  online --> store
+  store --> latest
+  latest --> scene
+  scene -->|是| alarm
+  alarm --> notice
+  notice --> done
+  scene -->|否| stored

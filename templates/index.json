@@ -40,6 +40,26 @@
       "file": "templates/flow/robot-scheduling-platform.mmd",
       "version": "1.0.0",
       "updatedAt": "2026-10-07"
+    },
+    {
+      "id": "jetlinks-iot-er",
+      "name": "JetLinks 物联网平台 · ER 模型",
+      "kind": "er",
+      "format": "dbml",
+      "description": "按 JetLinks 社区版的设备、协议、网关、规则告警和通知表整理。表和字段带中文注释，时序数据不在本图。",
+      "file": "templates/er/jetlinks-iot-platform.dbml",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-07"
+    },
+    {
+      "id": "jetlinks-iot-flow",
+      "name": "JetLinks 物联网平台 · 设备消息流程",
+      "kind": "flow",
+      "format": "mermaid",
+      "description": "设备报文经网络组件和网关解码后进入消息总线，再同步状态、落库，并可能触发场景告警和通知。",
+      "file": "templates/flow/jetlinks-iot-platform.mmd",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-07"
     }
   ]
 }

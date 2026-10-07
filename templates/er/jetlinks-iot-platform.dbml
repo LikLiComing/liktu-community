@@ -1,0 +1,428 @@
+// JetLinks 物联网平台的设备接入关系。表名对应社区版实体，字段按关系含义整理。
+// 审计列、用户菜单和插件表未放入本图。属性、事件、日志在时序库，不在这里建表。
+
+Enum device_type {
+  device [note: '直连设备']
+  childrenDevice [note: '网关子设备']
+  gateway [note: '网关设备']
+}
+
+Enum device_state {
+  notActive [note: '未激活，平台枚举文本为禁用']
+  offline [note: '离线']
+  online [note: '在线']
+}
+
+Enum component_state {
+  enabled [note: '正常']
+  paused [note: '已暂停']
+  disabled [note: '禁用']
+}
+
+Enum rule_instance_state {
+  started [note: '已启动']
+  disable [note: '禁用，场景和规则实例的默认值']
+}
+
+Enum alarm_state {
+  enabled [note: '启用']
+  disabled [note: '禁用']
+}
+
+Enum alarm_record_state {
+  warning [note: '告警中']
+  normal [note: '无告警']
+}
+
+Enum alarm_handle_type {
+  system [note: '系统处理']
+  user [note: '人工处理']
+}
+
+Enum alarm_handle_state {
+  unprocessed [note: '未处理']
+  processed [note: '已处理']
+}
+
+Table dev_product_category [headercolor: #0f766e, note: '产品分类，可继承物模型'] {
+  id varchar(64) [pk, note: '分类主键，雪花 ID']
+  parent_id varchar(64) [ref: > dev_product_category.id, note: '父分类，根分类为空']
+  key varchar(64) [not null, unique, note: '分类标识']
+  name varchar [not null, note: '分类名称']
+  description varchar [note: '分类说明']
+  metadata text [note: '分类级物模型 JSON']
+
+  Note: '产品分类，可继承物模型'
+}
+
+Table dev_protocol [headercolor: #0f766e, note: '设备消息协议'] {
+  id varchar(64) [pk, note: '协议主键']
+  name varchar [not null, note: '协议名称']
+  type varchar [note: '协议类型或安装提供商']
+  state int [not null, default: 1, note: '1 启用，0 禁用']
+  configuration text [note: '协议配置 JSON']
+  description varchar [note: '协议说明']
+
+  Note: '设备消息协议'
+}
+
+Table dev_product [headercolor: #0f766e, note: '同一类设备的物模型、协议和接入方式'] {
+  id varchar(64) [pk, note: '产品主键，雪花 ID']
+  name varchar [not null, note: '产品名称']
+  classified_id varchar(64) [ref: > dev_product_category.id, note: '所属分类']
+  message_protocol varchar(256) [ref: > dev_protocol.id, note: '消息协议']
+  access_id varchar(64) [ref: > device_gateway.id, note: '设备接入网关']
+  access_provider varchar(64) [note: '接入方式，如 mqtt-server-gateway']
+  device_type device_type [not null, note: '直连、网关或子设备']
+  transport_protocol varchar [note: '传输协议，如 MQTT、TCP']
+  network_way varchar [note: '入网方式']
+  metadata text [note: '产品物模型，含属性、功能和事件']
+  store_policy varchar [note: '属性、事件、日志的存储策略，数据在时序库']
+  store_policy_configuration text [note: '存储策略配置 JSON']
+  configuration text [note: '协议相关配置 JSON']
+  state int [not null, default: 0, note: '1 正常，0 禁用']
+
+  indexes {
+    (classified_id) [name: 'idx_prod_class_id']
+  }
+
+  Note: '同一类设备的物模型、协议和接入方式'
+}
+
+Table dev_device_instance [headercolor: #0f766e, note: '按产品创建设备，网关通过 parent_id 挂子设备'] {
+  id varchar(64) [pk, note: '设备主键，可由数字、字母、下划线和中划线组成']
+  name varchar [not null, note: '设备名称']
+  product_id varchar(64) [not null, ref: > dev_product.id, note: '所属产品']
+  product_name varchar [note: '产品名称冗余，便于列表展示']
+  parent_id varchar(64) [ref: > dev_device_instance.id, note: '父设备，子设备指向网关']
+  device_type device_type [note: '设备类型，通常继承产品']
+  state device_state [not null, default: 'notActive', note: '在线状态']
+  derive_metadata text [note: '设备独立物模型，为空则使用产品物模型']
+  configuration text [note: '设备配置 JSON']
+  registry_time bigint [note: '激活时间，毫秒时间戳']
+  describe varchar [note: '设备说明']
+
+  indexes {
+    (product_id) [name: 'idx_dev_product_id']
+    (parent_id) [name: 'idx_dev_parent_id']
+    (state) [name: 'idx_dev_state']
+  }
+
+  Note: '按产品创建设备，网关通过 parent_id 挂子设备'
+}
+
+Table dev_device_tags [headercolor: #0f766e, note: '设备标签，也可承接物模型中的标签属性'] {
+  id varchar(64) [pk, note: '标签主键，平台按 deviceId 与 key 生成']
+  device_id varchar(64) [not null, ref: > dev_device_instance.id, note: '所属设备']
+  key varchar(64) [not null, note: '标签标识']
+  name varchar [note: '标签名称']
+  value varchar(256) [not null, note: '标签值']
+  type varchar(32) [not null, default: 'string', note: '值类型']
+  description varchar [note: '标签说明']
+
+  indexes {
+    (device_id, key) [name: 'dev_tag_idx']
+  }
+
+  Note: '设备标签，也可承接物模型中的标签属性'
+}
+
+Table dev_metadata_mapping [headercolor: #0f766e, note: '把设备原始点位映射到平台物模型'] {
+  id varchar(64) [pk, note: '映射主键，由产品或设备、类型和物模型 ID 生成']
+  product_id varchar(64) [not null, ref: > dev_product.id, note: '所属产品']
+  device_id varchar(64) [ref: > dev_device_instance.id, note: '所属设备；为空时对产品下全部设备生效']
+  metadata_type varchar(32) [not null, default: 'property', note: '物模型类型，如 property、event、function']
+  metadata_id varchar(64) [not null, note: '平台物模型 ID']
+  original_id varchar(64) [not null, note: '设备原始点位 ID']
+  description varchar(512) [note: '映射说明']
+
+  indexes {
+    (product_id) [name: 'idx_dev_mmp_pid']
+    (device_id) [name: 'idx_dev_mmp_did']
+  }
+
+  Note: '把设备原始点位映射到平台物模型'
+}
+
+Table dev_transparent_codec [headercolor: #0f766e, note: '透传报文的脚本编解码，可挂在产品或单台设备上'] {
+  id varchar(64) [pk, note: '编解码主键，由产品与设备生成']
+  product_id varchar(64) [not null, ref: > dev_product.id, note: '所属产品']
+  device_id varchar(64) [ref: > dev_device_instance.id, note: '所属设备；为空时产品下设备共用']
+  provider varchar(64) [not null, note: '编解码提供商，如 jsr223']
+  configuration text [not null, note: '编解码脚本与配置 JSON']
+
+  Note: '透传报文的脚本编解码，可挂在产品或单台设备上'
+}
+
+Table thing_property_metric [headercolor: #0f766e, note: '物属性的指标定义，物可以是设备或产品'] {
+  id varchar(64) [pk, note: '指标主键，由物类型、物、属性和指标生成']
+  thing_type varchar(32) [not null, note: '物类型，如 device、product']
+  thing_id varchar(64) [not null, note: '物 ID，设备 ID 或产品 ID']
+  property varchar(64) [not null, note: '属性标识']
+  metric varchar(64) [not null, note: '指标标识']
+  metric_name varchar(64) [note: '指标名称']
+  value varchar(256) [not null, note: '指标值']
+  range boolean [not null, default: false, note: '是否为范围值']
+
+  Note: '物属性的指标定义，物可以是设备或产品'
+}
+
+Table certificate_info [headercolor: #2563eb, note: '网络组件可引用的证书，引用写在配置 JSON 中'] {
+  id varchar(64) [pk, note: '证书主键']
+  name varchar [not null, note: '证书名称']
+  type varchar [note: '证书类型']
+  format varchar [note: '证书格式']
+  mode varchar [note: '证书模式']
+  configs text [note: '证书内容 JSON']
+
+  Note: '网络组件可引用的证书，引用写在配置 JSON 中'
+}
+
+Table network_config [headercolor: #2563eb, note: 'MQTT、TCP、HTTP 等网络组件'] {
+  id varchar(64) [pk, note: '网络组件主键']
+  name varchar [not null, note: '组件名称']
+  type varchar [not null, note: '组件类型，如 MQTT_SERVER、TCP_SERVER']
+  state component_state [not null, default: 'enabled', note: '组件状态']
+  share_cluster boolean [note: '是否在集群内共享']
+  configuration text [note: '监听地址、认证和证书等配置 JSON']
+  description varchar [note: '组件说明']
+
+  Note: 'MQTT、TCP、HTTP 等网络组件'
+}
+
+Table device_gateway [headercolor: #2563eb, note: '把网络组件、协议和传输方式组成一条设备接入通道'] {
+  id varchar(64) [pk, note: '网关主键']
+  name varchar [not null, note: '网关名称']
+  provider varchar(64) [not null, note: '接入方式，如 mqtt-server-gateway']
+  channel varchar(64) [not null, note: '通道类型，通常是网络组件']
+  channel_id varchar(64) [ref: > network_config.id, note: '通道 ID，网络组件或其他通道']
+  protocol varchar(64) [not null, ref: > dev_protocol.id, note: '消息协议']
+  transport varchar(64) [not null, note: '传输协议，如 MQTT、TCP、UDP']
+  state component_state [not null, default: 'enabled', note: '网关状态']
+  configuration text [note: '网关配置 JSON']
+  description varchar [note: '网关说明']
+
+  Note: '把网络组件、协议和传输方式组成一条设备接入通道'
+}
+
+Table rule_instance [headercolor: #b45309, note: '规则引擎中的一条可启动规则'] {
+  id varchar(64) [pk, note: '规则实例主键']
+  name varchar [not null, note: '规则名称']
+  model_type varchar [note: '规则模型类型']
+  model_meta text [note: '规则模型 JSON']
+  model_version int [not null, default: 1, note: '模型版本']
+  state rule_instance_state [not null, default: 'disable', note: '是否已启动']
+  description varchar [note: '规则说明']
+
+  Note: '规则引擎中的一条可启动规则'
+}
+
+Table rule_scene [headercolor: #b45309, note: '由设备消息、定时或其他触发器启动的场景'] {
+  id varchar(64) [pk, note: '场景主键']
+  name varchar [not null, note: '场景名称']
+  trigger_type varchar(32) [not null, note: '触发器类型，如设备、定时']
+  trigger text [not null, note: '触发器 JSON']
+  terms text [note: '触发条件 JSON']
+  actions text [note: '满足条件后的动作 JSON']
+  parallel boolean [not null, default: false, note: '动作是否并行执行']
+  state rule_instance_state [not null, default: 'disable', note: '场景状态']
+
+  Note: '由设备消息、定时或其他触发器启动的场景'
+}
+
+Table rule_task_snapshot [headercolor: #b45309, note: '规则实例在调度器上的节点执行快照'] {
+  id varchar(64) [pk, note: '快照主键']
+  instance_id varchar(64) [not null, ref: > rule_instance.id, note: '规则实例']
+  scheduler_id varchar(128) [not null, note: '调度器 ID']
+  worker_id varchar(128) [not null, note: '执行器工作节点']
+  node_id varchar(64) [not null, note: '规则节点 ID']
+  executor varchar(64) [not null, note: '节点执行器']
+  name varchar [note: '节点名称']
+  state varchar [note: '节点任务状态']
+
+  indexes {
+    (instance_id, node_id) [name: 'idx_rtsk_inid']
+  }
+
+  Note: '规则实例在调度器上的节点执行快照'
+}
+
+Table alarm_level [headercolor: #b45309, note: '告警级别字典'] {
+  id varchar(64) [pk, note: '级别主键']
+  name varchar [not null, note: '级别名称']
+  config text [note: '级别展示配置 JSON']
+
+  Note: '告警级别字典'
+}
+
+Table alarm_config [headercolor: #b45309, note: '针对某类目标的告警定义'] {
+  id varchar(64) [pk, note: '告警配置主键']
+  name varchar(64) [not null, note: '告警名称']
+  target_type varchar(64) [not null, note: '告警目标类型，如 device']
+  level int [not null, note: '告警级别']
+  state alarm_state [not null, default: 'enabled', note: '告警是否启用']
+
+  Note: '针对某类目标的告警定义'
+}
+
+Table s_alarm_rule_bind [headercolor: #b45309, note: '把场景分支绑定到告警配置'] {
+  id varchar(64) [pk, note: '绑定主键，由告警、规则和分支生成']
+  alarm_id varchar(64) [not null, ref: > alarm_config.id, note: '告警配置']
+  rule_id varchar(64) [not null, ref: > rule_scene.id, note: '场景规则']
+  branch_index int [not null, default: -1, note: '条件分支序号，-1 表示任意分支']
+
+  indexes {
+    (alarm_id) [name: 'idx_alarm_rule_aid']
+    (rule_id) [name: 'idx_alarm_rule_rid']
+  }
+
+  Note: '把场景分支绑定到告警配置'
+}
+
+Table alarm_record [headercolor: #b45309, note: '某个目标上的当前告警，历史明细在时序库'] {
+  id varchar(64) [pk, note: '告警记录主键，由目标、类型和配置生成']
+  alarm_config_id varchar(64) [not null, ref: > alarm_config.id, note: '告警配置']
+  alarm_name varchar(64) [not null, note: '告警名称冗余']
+  target_type varchar(32) [note: '目标类型']
+  target_id varchar(64) [note: '目标 ID，设备告警时为设备 ID']
+  target_name varchar [note: '目标名称']
+  level int [note: '告警级别']
+  state alarm_record_state [not null, default: 'normal', note: '当前是否仍在告警']
+  handle_type alarm_handle_type [note: '最近处理类型']
+  alarm_time bigint [note: '首次告警时间，毫秒时间戳']
+  last_alarm_time bigint [note: '最近一次告警时间']
+  trigger_desc varchar(1024) [note: '触发条件描述']
+  actual_desc varchar(1024) [note: '告警原因描述']
+
+  indexes {
+    (target_id, target_type) [name: 'idx_alarm_rec_t_idtype']
+  }
+
+  Note: '某个目标上的当前告警，历史明细在时序库'
+}
+
+Table alarm_handle_history [headercolor: #b45309, note: '一次告警记录的处理过程'] {
+  id varchar(64) [pk, note: '处理记录主键']
+  alarm_id varchar(64) [not null, ref: > alarm_config.id, note: '告警配置']
+  alarm_record_id varchar(64) [not null, ref: > alarm_record.id, note: '告警记录']
+  handle_type alarm_handle_type [note: '系统或人工']
+  description varchar(256) [not null, note: '处理说明']
+  handle_time bigint [note: '处理时间，毫秒时间戳']
+  alarm_time bigint [note: '对应的告警时间']
+  state alarm_handle_state [not null, default: 'unprocessed', note: '处理状态']
+
+  indexes {
+    (alarm_record_id) [name: 'idx_ahh_alarm_record_id']
+  }
+
+  Note: '一次告警记录的处理过程'
+}
+
+Table notify_config [headercolor: #7c3aed, note: '邮件、短信、钉钉等通知渠道配置'] {
+  id varchar(64) [pk, note: '通知配置主键']
+  name varchar [not null, note: '配置名称']
+  type varchar [not null, note: '通知类型']
+  provider varchar [not null, note: '服务商']
+  configuration text [note: '服务商配置 JSON']
+
+  Note: '邮件、短信、钉钉等通知渠道配置'
+}
+
+Table notify_template [headercolor: #7c3aed, note: '通知内容模板，绑定到一条通知配置'] {
+  id varchar(64) [pk, note: '模板主键']
+  name varchar [note: '模板名称']
+  type varchar [not null, note: '通知类型']
+  provider varchar [not null, note: '服务商']
+  config_id varchar(64) [ref: > notify_config.id, note: '所属通知配置']
+  template text [note: '模板内容 JSON']
+
+  Note: '通知内容模板，绑定到一条通知配置'
+}
+
+Table notify_subscriber_provider [headercolor: #7c3aed, note: '通知订阅提供商'] {
+  id varchar(64) [pk, note: '提供商主键']
+  name varchar [not null, note: '提供商名称']
+  provider varchar [note: '提供商标识']
+  state varchar [note: '提供商状态']
+
+  Note: '通知订阅提供商'
+}
+
+Table notify_subscriber_channel [headercolor: #7c3aed, note: '订阅提供商下的发送通道'] {
+  id varchar(64) [pk, note: '通道主键']
+  provider_id varchar(64) [not null, ref: > notify_subscriber_provider.id, note: '订阅提供商']
+  name varchar [note: '通道名称']
+  channel_provider varchar [note: '通道类型']
+  state varchar [note: '通道状态']
+
+  Note: '订阅提供商下的发送通道'
+}
+
+Table notify_subscribers [headercolor: #7c3aed, note: '谁订阅了哪类主题，以及用哪个提供商发送'] {
+  id varchar(64) [pk, note: '订阅主键，由类型、订阅者和主题生成']
+  subscriber_type varchar [note: '订阅者类型']
+  subscriber varchar [note: '订阅者 ID']
+  provider_id varchar(64) [ref: > notify_subscriber_provider.id, note: '订阅提供商']
+  topic_provider varchar [note: '主题提供商']
+  topic_name varchar [note: '订阅主题']
+  state varchar [note: '订阅状态']
+
+  Note: '谁订阅了哪类主题，以及用哪个提供商发送'
+}
+
+Table notify_notifications [headercolor: #7c3aed, note: '已经生成、待投递或已投递的通知消息'] {
+  id varchar(64) [pk, note: '通知消息主键']
+  subscribe_id varchar(64) [ref: > notify_subscribers.id, note: '来源订阅']
+  subscriber_type varchar [note: '订阅者类型']
+  subscriber varchar [note: '订阅者 ID']
+  message text [note: '消息内容']
+  state varchar [note: '投递状态']
+  notify_time bigint [note: '通知时间，毫秒时间戳']
+
+  Note: '已经生成、待投递或已投递的通知消息'
+}
+
+TableGroup device_domain {
+  dev_product_category
+  dev_protocol
+  dev_product
+  dev_device_instance
+  dev_device_tags
+  dev_metadata_mapping
+  dev_transparent_codec
+  thing_property_metric
+
+  Note: '设备、产品与物模型'
+}
+
+TableGroup network_domain {
+  certificate_info
+  network_config
+  device_gateway
+
+  Note: '网络接入'
+}
+
+TableGroup rule_domain {
+  rule_instance
+  rule_scene
+  rule_task_snapshot
+  alarm_level
+  alarm_config
+  s_alarm_rule_bind
+  alarm_record
+  alarm_handle_history
+
+  Note: '规则与告警'
+}
+
+TableGroup notify_domain {
+  notify_config
+  notify_template
+  notify_subscriber_provider
+  notify_subscriber_channel
+  notify_subscribers
+  notify_notifications
+
+  Note: '通知'
+}
