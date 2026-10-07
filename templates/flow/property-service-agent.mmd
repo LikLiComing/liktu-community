@@ -1,0 +1,27 @@
+flowchart TD
+  start([住户或商户发起咨询])
+  channel[统一接入文字或小程序消息]
+  context[读取会话上下文与记忆]
+  intent[Agent 识别意图并选择执行路径]
+  knowledge{知识咨询?}
+  retrieve[RAG 检索已审核知识片段]
+  grounded{检索内容足以回答?}
+  toolRoute[选择并校验业务工具]
+  toolCall[调用收费、报修或门禁等系统]
+  toolOk{工具执行成功?}
+  answer[组织回答并更新会话记忆]
+  retry{可重试且未超限?}
+  handoff[创建服务工单或转人工]
+  feedback([返回结果并记录执行链路])
+
+  start --> channel --> context --> intent --> knowledge
+  knowledge -->|是| retrieve --> grounded
+  grounded -->|是| answer
+  grounded -->|否| handoff
+  knowledge -->|否| toolRoute --> toolCall --> toolOk
+  toolOk -->|是| answer
+  toolOk -->|否| retry
+  retry -->|是| toolCall
+  retry -->|否| handoff
+  answer --> feedback
+  handoff --> feedback

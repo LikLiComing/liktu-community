@@ -1,0 +1,117 @@
+Enum verification_status {
+  pending
+  in_progress
+  passed
+  needs_more_evidence
+  rejected
+}
+
+Enum financing_status {
+  draft
+  submitted
+  evaluating
+  matched
+  signing
+  completed
+  closed
+}
+
+Table enterprises [headercolor: #0f766e, note: '申请信用评估或融资服务的企业主体'] {
+  id bigint [pk, increment]
+  registration_no varchar(40) [not null, unique]
+  legal_name varchar(200) [not null]
+  industry_code varchar(40)
+  registered_at date
+  status varchar(24) [not null]
+}
+
+Table enterprise_profiles [note: '企业基础资料及经过授权采集的经营信息'] {
+  id bigint [pk, increment]
+  enterprise_id bigint [not null, unique, ref: > enterprises.id]
+  annual_revenue decimal(18,2)
+  employee_count int
+  region_code varchar(24)
+  updated_at timestamp [not null]
+}
+
+Table credit_reports [note: '按申请或服务周期生成的企业征信报告'] {
+  id bigint [pk, increment]
+  enterprise_id bigint [not null, ref: > enterprises.id]
+  report_no varchar(80) [not null, unique]
+  data_as_of timestamp [not null]
+  status varchar(24) [not null]
+  generated_at timestamp
+}
+
+Table report_factors [note: '报告中的指标、风险因素或数据来源摘要'] {
+  id bigint [pk, increment]
+  report_id bigint [not null, ref: > credit_reports.id]
+  factor_code varchar(80) [not null]
+  factor_value text
+  source_type varchar(60)
+}
+
+Table verification_cases [note: '现场认证任务及其核验状态'] {
+  id bigint [pk, increment]
+  enterprise_id bigint [not null, ref: > enterprises.id]
+  report_id bigint [ref: > credit_reports.id]
+  verifier_key varchar(100)
+  status verification_status [not null, default: 'pending']
+  scheduled_at timestamp
+  completed_at timestamp
+}
+
+Table evidence_items [note: '现场采集并关联到核验任务的材料索引'] {
+  id bigint [pk, increment]
+  verification_case_id bigint [not null, ref: > verification_cases.id]
+  evidence_type varchar(60) [not null]
+  file_ref varchar(200) [not null]
+  captured_at timestamp [not null]
+}
+
+Table financing_applications [note: '企业融资需求、额度和期限等申请信息'] {
+  id bigint [pk, increment]
+  enterprise_id bigint [not null, ref: > enterprises.id]
+  requested_amount decimal(18,2) [not null]
+  requested_term_months int
+  purpose varchar(200)
+  status financing_status [not null, default: 'draft']
+  submitted_at timestamp
+}
+
+Table evaluation_runs [note: '基于规则或评分模型的评估过程'] {
+  id bigint [pk, increment]
+  application_id bigint [not null, ref: > financing_applications.id]
+  report_id bigint [ref: > credit_reports.id]
+  model_version varchar(60) [not null]
+  score decimal(8,3)
+  decision varchar(40) [not null]
+  evaluated_at timestamp [not null]
+}
+
+Table funding_partners [note: '可通过标准接口协同的金融服务机构'] {
+  id int [pk, increment]
+  partner_code varchar(60) [not null, unique]
+  name varchar(160) [not null]
+  interface_status varchar(24) [not null]
+}
+
+Table partner_matches [note: '融资需求与服务机构产品的匹配及流转记录'] {
+  id bigint [pk, increment]
+  application_id bigint [not null, ref: > financing_applications.id]
+  partner_id int [not null, ref: > funding_partners.id]
+  evaluation_run_id bigint [ref: > evaluation_runs.id]
+  match_status varchar(40) [not null]
+  submitted_at timestamp
+  response_at timestamp
+}
+
+Table electronic_contracts [note: '通过电子签署服务流转的合同记录'] {
+  id bigint [pk, increment]
+  application_id bigint [not null, ref: > financing_applications.id]
+  partner_match_id bigint [ref: > partner_matches.id]
+  provider_ref varchar(120)
+  status varchar(24) [not null]
+  sent_at timestamp
+  completed_at timestamp
+}

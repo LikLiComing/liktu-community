@@ -1,0 +1,109 @@
+Enum conversation_status {
+  active
+  waiting_human
+  resolved
+  closed
+}
+
+Enum agent_step_type {
+  classify
+  retrieve
+  tool_call
+  respond
+  handoff
+}
+
+Table service_channels [headercolor: #0f766e, note: '小程序、网页或其他客服入口'] {
+  id int [pk, increment]
+  name varchar(80) [not null]
+  channel_type varchar(40) [not null]
+  enabled boolean [not null, default: true]
+}
+
+Table conversations [note: '一次住户或商户与客服的多轮会话'] {
+  id bigint [pk, increment]
+  channel_id int [not null, ref: > service_channels.id]
+  external_user_key varchar(120) [not null]
+  context_key varchar(120)
+  status conversation_status [not null, default: 'active']
+  started_at timestamp [not null]
+  ended_at timestamp
+}
+
+Table messages [note: '用户问题与智能体、人工客服的消息记录'] {
+  id bigint [pk, increment]
+  conversation_id bigint [not null, ref: > conversations.id]
+  role varchar(24) [not null]
+  content text [not null]
+  created_at timestamp [not null]
+}
+
+Table agent_runs [note: '由图编排驱动的一轮或多轮 Agent 执行'] {
+  id bigint [pk, increment]
+  conversation_id bigint [not null, ref: > conversations.id]
+  graph_version varchar(60) [not null]
+  intent varchar(80)
+  status varchar(24) [not null]
+  started_at timestamp [not null]
+  completed_at timestamp
+}
+
+Table agent_steps [note: '意图判断、检索、工具调用、重试或转人工节点'] {
+  id bigint [pk, increment]
+  agent_run_id bigint [not null, ref: > agent_runs.id]
+  step_type agent_step_type [not null]
+  sequence_no int [not null]
+  input_summary text
+  output_summary text
+  status varchar(24) [not null]
+  retry_count int [not null, default: 0]
+  created_at timestamp [not null]
+}
+
+Table knowledge_documents [note: '经过审核发布的物业知识文档'] {
+  id bigint [pk, increment]
+  title varchar(200) [not null]
+  category varchar(80) [not null]
+  version varchar(40) [not null]
+  status varchar(24) [not null]
+  effective_at timestamp
+  expires_at timestamp
+}
+
+Table knowledge_chunks [note: '文档切片及其向量检索索引引用'] {
+  id bigint [pk, increment]
+  document_id bigint [not null, ref: > knowledge_documents.id]
+  chunk_no int [not null]
+  content text [not null]
+  vector_ref varchar(160)
+}
+
+Table agent_tools [note: '受控业务系统工具目录'] {
+  id int [pk, increment]
+  tool_key varchar(80) [not null, unique]
+  name varchar(120) [not null]
+  description text
+  input_schema text
+  enabled boolean [not null, default: true]
+}
+
+Table tool_invocations [note: 'Agent 对收费、报修、门禁等业务工具的调用记录'] {
+  id bigint [pk, increment]
+  agent_step_id bigint [not null, ref: > agent_steps.id]
+  tool_id int [not null, ref: > agent_tools.id]
+  request_summary text
+  result_summary text
+  status varchar(24) [not null]
+  invoked_at timestamp [not null]
+}
+
+Table service_tickets [note: '由会话或工具操作产生并交由服务流程处理的工单'] {
+  id bigint [pk, increment]
+  conversation_id bigint [ref: > conversations.id]
+  tool_invocation_id bigint [ref: > tool_invocations.id]
+  ticket_type varchar(60) [not null]
+  description text [not null]
+  status varchar(24) [not null]
+  created_at timestamp [not null]
+  resolved_at timestamp
+}

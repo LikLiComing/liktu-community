@@ -1,0 +1,100 @@
+Enum job_status {
+  queued
+  running
+  succeeded
+  failed
+  cancelled
+}
+
+Table source_systems [headercolor: #0f766e, note: '向数据服务提供接口或文件的来源系统'] {
+  id int [pk, increment]
+  source_key varchar(80) [not null, unique]
+  name varchar(160) [not null]
+  source_type varchar(40) [not null]
+  enabled boolean [not null, default: true]
+}
+
+Table ingestion_jobs [note: '按来源和时间窗口运行的数据采集批次'] {
+  id bigint [pk, increment]
+  source_id int [not null, ref: > source_systems.id]
+  window_start timestamp [not null]
+  window_end timestamp [not null]
+  status job_status [not null, default: 'queued']
+  received_count bigint [not null, default: 0]
+  started_at timestamp
+  completed_at timestamp
+}
+
+Table raw_batches [note: '保留来源数据边界的原始批次索引'] {
+  id bigint [pk, increment]
+  ingestion_job_id bigint [not null, ref: > ingestion_jobs.id]
+  storage_ref varchar(200) [not null]
+  schema_version varchar(60)
+  record_count bigint [not null, default: 0]
+  created_at timestamp [not null]
+}
+
+Table cleansing_jobs [note: 'Spark 清洗服务的一次执行及资源测量'] {
+  id bigint [pk, increment]
+  raw_batch_id bigint [not null, ref: > raw_batches.id]
+  pipeline_version varchar(60) [not null]
+  status job_status [not null, default: 'queued']
+  input_count bigint [not null, default: 0]
+  output_count bigint [not null, default: 0]
+  rejected_count bigint [not null, default: 0]
+  started_at timestamp
+  completed_at timestamp
+}
+
+Table cleansing_rules [note: '可复用的数据校验、映射、去重或标准化规则'] {
+  id int [pk, increment]
+  rule_key varchar(80) [not null, unique]
+  name varchar(160) [not null]
+  rule_type varchar(40) [not null]
+  expression text [not null]
+  version varchar(40) [not null]
+  enabled boolean [not null, default: true]
+}
+
+Table job_rule_results [note: '清洗批次使用规则及其处理统计'] {
+  id bigint [pk, increment]
+  cleansing_job_id bigint [not null, ref: > cleansing_jobs.id]
+  rule_id int [not null, ref: > cleansing_rules.id]
+  affected_count bigint [not null, default: 0]
+  status varchar(24) [not null]
+}
+
+Table quality_issues [note: '清洗中发现的数据质量问题摘要'] {
+  id bigint [pk, increment]
+  cleansing_job_id bigint [not null, ref: > cleansing_jobs.id]
+  rule_id int [ref: > cleansing_rules.id]
+  issue_type varchar(60) [not null]
+  sample_ref varchar(200)
+  severity varchar(24) [not null]
+}
+
+Table curated_datasets [note: '供 BI 消费的标准化主题数据集'] {
+  id int [pk, increment]
+  dataset_key varchar(80) [not null, unique]
+  name varchar(160) [not null]
+  schema_version varchar(60) [not null]
+  owner_group varchar(80)
+}
+
+Table dataset_versions [note: '由成功清洗任务发布的数据集版本'] {
+  id bigint [pk, increment]
+  dataset_id int [not null, ref: > curated_datasets.id]
+  cleansing_job_id bigint [not null, ref: > cleansing_jobs.id]
+  version varchar(60) [not null]
+  storage_ref varchar(200) [not null]
+  published_at timestamp [not null]
+}
+
+Table bi_views [note: 'BI 平台可视化消费的数据集视图'] {
+  id int [pk, increment]
+  dataset_id int [not null, ref: > curated_datasets.id]
+  view_key varchar(80) [not null, unique]
+  name varchar(160) [not null]
+  refresh_policy varchar(60)
+  status varchar(24) [not null]
+}

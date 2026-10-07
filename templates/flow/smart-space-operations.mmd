@@ -1,0 +1,37 @@
+flowchart TD
+  start([人员定位或设备数据进入平台])
+  adapter[按协议适配并标准化事件]
+  eventType{事件类型?}
+  location[滤波纠偏并更新人员位置]
+  telemetry[更新设备状态与设施画像]
+  alert{是否命中告警或作业规则?}
+  createOrder[创建或更新服务工单]
+  aggregate[汇聚工单池与资源池画像]
+  rules[加载动态硬约束与软约束]
+  candidates[构造规划实体、可选人员与动态规则]
+  score[按硬约束和软约束计算方案得分]
+  move[生成候选变更并重新评分]
+  accept[Late Acceptance 对比历史延迟分并决定是否接受]
+  terminate{达到时间或终止条件?}
+  feasible{当前最佳解满足硬约束?}
+  wait[保留待调度状态并等待资源或规则变化]
+  publish[发布排程并生成派工]
+  execute[现场人员处理工单]
+  feedback[回传进度、结果与定位事件]
+  reschedule{是否需要动态重排?}
+  done([归档工单并沉淀运营数据])
+
+  start --> adapter --> eventType
+  eventType -->|定位| location
+  eventType -->|设备遥测或告警| telemetry
+  location --> alert
+  telemetry --> alert
+  alert -->|是| createOrder --> aggregate
+  alert -->|否| done
+  aggregate --> rules --> candidates --> score --> move --> accept --> terminate
+  terminate -->|否| move
+  terminate -->|是| feasible
+  feasible -->|否| wait --> aggregate
+  feasible -->|是| publish --> execute --> feedback --> reschedule
+  reschedule -->|是| aggregate
+  reschedule -->|否| done

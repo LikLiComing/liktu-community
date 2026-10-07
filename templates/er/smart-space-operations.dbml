@@ -1,0 +1,136 @@
+Enum work_order_status {
+  open [note: '待处理']
+  scheduled [note: '已排程']
+  assigned [note: '已派发']
+  in_progress [note: '处理中']
+  completed [note: '已完成']
+  cancelled [note: '已取消']
+}
+
+Enum schedule_status {
+  solving [note: '求解中']
+  feasible [note: '存在可行解']
+  published [note: '已发布']
+  no_solution [note: '当前无可行解']
+}
+
+Enum location_source {
+  pda
+  mobile
+  badge
+  intercom
+}
+
+Table sites [headercolor: #0f766e, note: '物业园区、住宅或商业空间'] {
+  id int [pk, increment]
+  name varchar(120) [not null]
+  site_type varchar(40) [not null, note: '住宅、商办或园区等']
+}
+
+Table spaces [note: '园区内楼栋、楼层、房间等空间层级'] {
+  id int [pk, increment]
+  site_id int [not null, ref: > sites.id]
+  parent_space_id int [ref: > spaces.id]
+  name varchar(120) [not null]
+  space_type varchar(40) [not null]
+}
+
+Table assets [note: '需要巡检、维护或产生告警的设施资产'] {
+  id int [pk, increment]
+  site_id int [not null, ref: > sites.id]
+  space_id int [ref: > spaces.id]
+  asset_code varchar(80) [not null, unique]
+  asset_type varchar(80) [not null]
+  status varchar(24) [not null]
+}
+
+Table iot_devices [note: '通过边缘或消息接入的设备与传感器'] {
+  id int [pk, increment]
+  asset_id int [ref: > assets.id]
+  device_code varchar(100) [not null, unique]
+  protocol varchar(40) [not null, note: '如 OPC UA、MQTT']
+  device_type varchar(60) [not null]
+  status varchar(24) [not null]
+}
+
+Table device_events [note: '标准化后的设备状态、遥测或告警事件'] {
+  id bigint [pk, increment]
+  device_id int [not null, ref: > iot_devices.id]
+  event_type varchar(40) [not null]
+  occurred_at timestamp [not null]
+  payload text
+}
+
+Table people [note: '保洁、工程及现场服务人员'] {
+  id int [pk, increment]
+  site_id int [not null, ref: > sites.id]
+  display_name varchar(100) [not null]
+  role varchar(60) [not null]
+  status varchar(24) [not null]
+}
+
+Table tracking_devices [note: '人员携带的定位终端'] {
+  id int [pk, increment]
+  person_id int [ref: > people.id]
+  device_code varchar(100) [not null, unique]
+  source location_source [not null]
+  last_seen_at timestamp
+}
+
+Table location_events [note: '统一接入、滤波和纠偏后的定位轨迹点'] {
+  id bigint [pk, increment]
+  tracking_device_id int [not null, ref: > tracking_devices.id]
+  space_id int [ref: > spaces.id]
+  x decimal(10,3)
+  y decimal(10,3)
+  confidence decimal(5,4)
+  occurred_at timestamp [not null]
+}
+
+Table work_orders [note: '由报事、设备告警或巡检任务形成的服务工单'] {
+  id bigint [pk, increment]
+  site_id int [not null, ref: > sites.id]
+  space_id int [ref: > spaces.id]
+  asset_id int [ref: > assets.id]
+  source_event_id bigint [ref: > device_events.id]
+  category varchar(60) [not null]
+  priority int [not null, default: 0]
+  required_skill varchar(80)
+  earliest_start_at timestamp
+  due_at timestamp
+  status work_order_status [not null, default: 'open']
+  created_at timestamp [not null]
+}
+
+Table schedule_runs [note: '一次动态排程求解及其策略版本'] {
+  id bigint [pk, increment]
+  site_id int [not null, ref: > sites.id]
+  strategy_version varchar(60) [not null]
+  status schedule_status [not null, default: 'solving']
+  hard_score int
+  soft_score int
+  started_at timestamp [not null]
+  completed_at timestamp
+}
+
+Table assignments [note: '求解器为工单生成的候选或已发布派工'] {
+  id bigint [pk, increment]
+  schedule_run_id bigint [not null, ref: > schedule_runs.id]
+  work_order_id bigint [not null, ref: > work_orders.id]
+  person_id int [not null, ref: > people.id]
+  planned_start_at timestamp [not null]
+  planned_end_at timestamp [not null]
+  hard_score int [not null, default: 0]
+  soft_score int [not null, default: 0]
+  published boolean [not null, default: false]
+}
+
+Table constraint_rules [note: '动态配置的硬约束与软约束规则'] {
+  id int [pk, increment]
+  site_id int [not null, ref: > sites.id]
+  code varchar(80) [not null]
+  constraint_level varchar(12) [not null, note: 'hard 或 soft']
+  weight int [not null]
+  enabled boolean [not null, default: true]
+  rule_expression text [not null]
+}

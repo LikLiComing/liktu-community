@@ -1,0 +1,21 @@
+flowchart TD
+  start([客户接口数据到达])
+  ingest[登记来源与采集批次]
+  land[保存原始批次并记录模式版本]
+  load[提交 Spark 清洗任务]
+  rules[加载版本化清洗规则]
+  transform[校验、标准化、映射与去重]
+  quality{质量校验通过?}
+  issue[记录质量问题与拒绝数据]
+  publish[写入标准化主题数据集]
+  bi[刷新或供 BI 视图消费]
+  retry{任务是否可重试?}
+  failed([记录失败状态并告警])
+  done([归档批次、规则版本和执行指标])
+
+  start --> ingest --> land --> load --> rules --> transform --> quality
+  quality -->|通过| publish --> bi --> done
+  quality -->|部分不通过| issue --> publish
+  load --> retry
+  retry -->|是| load
+  retry -->|否| failed

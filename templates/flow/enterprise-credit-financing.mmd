@@ -1,0 +1,26 @@
+flowchart TD
+  start([企业发起信用或融资服务申请])
+  consent[确认授权并采集企业资料]
+  completeness{资料完整且可核验?}
+  supplement[提示补充或更正资料]
+  report[汇聚数据并生成征信报告]
+  verify[移动作业完成现场认证与取证]
+  evaluation[按模型与规则生成评估结果]
+  matched{存在适配的服务产品?}
+  noMatch[反馈暂不匹配并保留申请记录]
+  partner[经标准接口提交合作机构]
+  response{收到合作方处理结果?}
+  contract[发起电子合同签署]
+  signed{签署完成?}
+  track[更新申请状态并通知相关方]
+  done([归档报告、核验和流转记录])
+
+  start --> consent --> completeness
+  completeness -->|否| supplement --> consent
+  completeness -->|是| report --> verify --> evaluation --> matched
+  matched -->|否| noMatch --> done
+  matched -->|是| partner --> response
+  response -->|处理中或需补充| track --> partner
+  response -->|进入签约| contract --> signed
+  signed -->|是| track --> done
+  signed -->|否| track

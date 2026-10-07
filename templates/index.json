@@ -2,16 +2,6 @@
   "schemaVersion": 1,
   "templates": [
     {
-      "id": "online-store-er",
-      "name": "电商订单与商品",
-      "kind": "er",
-      "format": "dbml",
-      "description": "包含用户、商品、订单、订单项和商品状态枚举。表和字段都带中文注释，便于人和 AI 阅读。",
-      "file": "templates/er/online-store.dbml",
-      "version": "1.2.0",
-      "updatedAt": "2026-10-07"
-    },
-    {
       "id": "approval-flow",
       "name": "资料提交与审核",
       "kind": "flow",
@@ -58,6 +48,86 @@
       "format": "mermaid",
       "description": "设备报文经网络组件和网关解码后进入消息总线，再同步状态、落库，并可能触发场景告警和通知。",
       "file": "templates/flow/jetlinks-iot-platform.mmd",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-07"
+    },
+    {
+      "id": "smart-space-operations-er",
+      "name": "智慧空间协同运营 · ER 模型",
+      "kind": "er",
+      "format": "dbml",
+      "description": "关联空间、设施、设备事件、定位轨迹和工单派工，突出动态硬软约束与排程求解记录。",
+      "file": "templates/er/smart-space-operations.dbml",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-07"
+    },
+    {
+      "id": "smart-space-operations-flow",
+      "name": "智慧空间协同运营 · 约束排程流程",
+      "kind": "flow",
+      "format": "mermaid",
+      "description": "展示多源事件形成工单、汇聚人员资源画像，并通过硬约束可行性和软约束评分动态派工。",
+      "file": "templates/flow/smart-space-operations.mmd",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-07"
+    },
+    {
+      "id": "property-service-agent-er",
+      "name": "物业服务 AI Agent · ER 模型",
+      "kind": "er",
+      "format": "dbml",
+      "description": "涵盖多渠道会话、Agent 执行节点、RAG 知识切片、受控工具调用与服务工单。",
+      "file": "templates/er/property-service-agent.dbml",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-07"
+    },
+    {
+      "id": "property-service-agent-flow",
+      "name": "物业服务 AI Agent · 编排流程",
+      "kind": "flow",
+      "format": "mermaid",
+      "description": "以 Agent 多分支编排为核心，展示会话记忆、RAG 检索、业务工具调用、重试和转人工。",
+      "file": "templates/flow/property-service-agent.mmd",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-07"
+    },
+    {
+      "id": "enterprise-credit-financing-er",
+      "name": "企业信用与融资服务 · ER 模型",
+      "kind": "er",
+      "format": "dbml",
+      "description": "连接企业资料、征信报告、实地认证、融资评估、合作机构匹配与电子合同。",
+      "file": "templates/er/enterprise-credit-financing.dbml",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-07"
+    },
+    {
+      "id": "enterprise-credit-financing-flow",
+      "name": "企业信用与融资服务 · 业务流程",
+      "kind": "flow",
+      "format": "mermaid",
+      "description": "展示授权采集、征信报告、现场核验、规则评估、机构协同和电子签署。",
+      "file": "templates/flow/enterprise-credit-financing.mmd",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-07"
+    },
+    {
+      "id": "enterprise-data-cleansing-er",
+      "name": "企业数据治理与 BI · ER 模型",
+      "kind": "er",
+      "format": "dbml",
+      "description": "从数据来源和采集批次，到 Spark 清洗规则、质量问题、主题数据集与 BI 视图。",
+      "file": "templates/er/enterprise-data-cleansing.dbml",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-07"
+    },
+    {
+      "id": "enterprise-data-cleansing-flow",
+      "name": "企业数据治理与 BI · 清洗流程",
+      "kind": "flow",
+      "format": "mermaid",
+      "description": "展示接口数据落批、Spark 规则化清洗、质量问题记录和 BI 数据集发布。",
+      "file": "templates/flow/enterprise-data-cleansing.mmd",
       "version": "1.0.0",
       "updatedAt": "2026-10-07"
     }
