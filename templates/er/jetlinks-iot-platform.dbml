@@ -426,3 +426,38 @@ TableGroup notify_domain {
 
   Note: '通知'
 }
+
+// @er-studio-layout
+// @pos rule_instance 537 41
+// @pos rule_scene 1024 28
+// @pos rule_task_snapshot 1496 10
+// @pos alarm_config 558 435
+// @pos s_alarm_rule_bind 1046 414
+// @pos alarm_level 1501 468
+// @pos alarm_record 529 760
+// @pos alarm_handle_history 1028 832
+// @pos certificate_info 42 1495
+// @pos network_config 10 1811
+// @pos device_gateway 10 2181
+// @pos dev_product_category 572 1377
+// @pos dev_protocol 1045 1377
+// @pos dev_transparent_codec 1454 1376
+// @pos dev_product 555 1694
+// @pos dev_device_instance 1021 1729
+// @pos dev_device_tags 1459 1806
+// @pos dev_metadata_mapping 522 2310
+// @pos thing_property_metric 1016 2324
+// @pos notify_config 1960 1568
+// @pos notify_subscriber_channel 2364 1568
+// @pos notify_template 1960 1878
+// @pos notify_subscribers 2340 1858
+// @pos notify_subscriber_provider 1960 2253
+// @pos notify_notifications 2364 2214
+// @pos device_type 571 2816
+// @pos device_state 871 2816
+// @pos component_state 1187 2816
+// @pos rule_instance_state 1503 2829
+// @pos alarm_state 571 3028
+// @pos alarm_record_state 847 3028
+// @pos alarm_handle_type 1179 3028
+// @pos alarm_handle_state 1507 3028

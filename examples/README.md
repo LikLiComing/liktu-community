@@ -17,7 +17,7 @@
 
 ## JetLinks 物联网平台
 
-- `../templates/er/jetlinks-iot-platform.dbml`：按产品分类、协议、产品和设备组织接入模型，并带上网关、场景规则、告警和通知。网关设备通过 `parent_id` 挂子设备；物模型映射和透传编解码可以挂在产品或单台设备上。
+- `../templates/er/jetlinks-iot-platform.dbml`：按产品分类、协议、产品和设备组织接入模型，并带上网关、场景规则、告警和通知。网关设备通过 `parent_id` 挂子设备；物模型映射和透传编解码可以挂在产品或单台设备上。画布以设备和产品为中心，网络接入在左，规则告警在上，通知在右，枚举在下。
 - `../templates/flow/jetlinks-iot-platform.mmd`：设备报文从网络组件进入设备网关，解码成功后发布到消息总线。注册、子设备、派生物模型和上下线分别处理，然后按产品存储策略落库；命中场景时写告警并发送通知。
 
 关系来自 JetLinks 社区版的设备、网络、规则和通知实体，例如 `dev_product`、`dev_device_instance`、`device_gateway`、`rule_scene` 和 `alarm_record`。图中省略了创建人、修改时间等审计列，也没有放入用户、菜单、插件和文件表。设备属性、事件和日志按产品的存储策略写入时序库，不在这张关系图里建表。

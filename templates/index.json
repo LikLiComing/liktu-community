@@ -46,9 +46,9 @@
       "name": "JetLinks 物联网平台 · ER 模型",
       "kind": "er",
       "format": "dbml",
-      "description": "按 JetLinks 社区版的设备、协议、网关、规则告警和通知表整理。表和字段带中文注释，时序数据不在本图。",
+      "description": "按 JetLinks 社区版的设备、协议、网关、规则告警和通知表整理。画布以设备和产品为中心，网络、规则和通知向四周展开。",
       "file": "templates/er/jetlinks-iot-platform.dbml",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "updatedAt": "2026-10-07"
     },
     {
