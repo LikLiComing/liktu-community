@@ -18,6 +18,7 @@
 
 - `../templates/er/smart-space-operations.dbml`：空间、资产、设备事件、定位轨迹、工单、排程轮次、人员派工和硬软约束。
 - `../templates/flow/smart-space-operations.mmd`：从多源事件接入、工单汇聚，到约束评分、派工发布和动态重排。
+- `../templates/flow/smart-space-operations.drawio`：可在 diagrams.net 中继续编辑的位置质量处理、设备自动注册、人员画像与 OptaPlanner 调度流程。
 
 ## 适用范围
 
