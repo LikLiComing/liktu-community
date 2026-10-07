@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "templates": [
+    {
+      "id": "online-store-er",
+      "name": "电商订单与商品",
+      "kind": "er",
+      "format": "dbml",
+      "description": "包含用户、商品、订单、订单项和商品状态枚举的基础模型。",
+      "file": "templates/er/online-store.dbml",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-07"
+    },
+    {
+      "id": "approval-flow",
+      "name": "资料提交与审核",
+      "kind": "flow",
+      "format": "mermaid",
+      "description": "资料提交后检查完整性，缺失时补充，完整后保存并完成。",
+      "file": "templates/flow/approval-flow.mmd",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-07"
+    }
+  ]
+}

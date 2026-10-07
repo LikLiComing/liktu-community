@@ -1,0 +1,14 @@
+%%{init: {"flowchart": {"curve": "basis"}}}%%
+flowchart TD
+  start([开始])
+  fill[/填写资料/]
+  check{资料完整?}
+  save[保存]
+  fix[补充资料]
+  done([完成])
+  start --> fill
+  fill --> check
+  check -->|是| save
+  save --> done
+  check -->|否| fix
+  fix --> fill
