@@ -1,0 +1,44 @@
+%%{init: {"flowchart": {"curve": "basis"}}}%%
+flowchart TD
+  start([收到任务请求])
+  validate{任务信息有效?}
+  reject[返回校验错误]
+  broadcast[向可用车队发送竞价请求]
+  bids{收到有效竞价?}
+  unavailable[标记暂无可用车队]
+  compare[按预计成本与完成时间比较竞价]
+  dispatch[将任务派发给中标车队与机器人]
+  plan[规划路线并申请通行时隙]
+  conflict{通道或门梯资源冲突?}
+  coordinate[等待资源释放或重新规划路线]
+  infrastructure{是否需要门或电梯协作?}
+  request[通过设施适配器请求门或电梯]
+  accepted{设施确认可用?}
+  execute[机器人执行任务]
+  update[回传位置、状态与执行进度]
+  finished{任务已完成?}
+  complete([记录完成结果])
+  continue[继续执行当前任务]
+
+  start --> validate
+  validate -->|否| reject
+  validate -->|是| broadcast
+  broadcast --> bids
+  bids -->|否| unavailable
+  bids -->|是| compare
+  compare --> dispatch
+  dispatch --> plan
+  plan --> conflict
+  conflict -->|是| coordinate
+  coordinate --> plan
+  conflict -->|否| infrastructure
+  infrastructure -->|是| request
+  request --> accepted
+  accepted -->|否| coordinate
+  accepted -->|是| execute
+  infrastructure -->|否| execute
+  execute --> update
+  update --> finished
+  finished -->|是| complete
+  finished -->|否| continue
+  continue --> execute

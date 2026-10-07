@@ -1,0 +1,142 @@
+Enum robot_status {
+  idle
+  busy
+  charging
+  offline
+}
+
+Enum task_status {
+  queued
+  bidding
+  dispatched
+  executing
+  completed
+  failed
+  cancelled
+}
+
+Enum resource_type {
+  door
+  lift
+}
+
+Enum reservation_status {
+  requested
+  granted
+  active
+  released
+  denied
+}
+
+Table facilities [headercolor: #0f766e] {
+  id int [pk, increment]
+  name varchar(120) [not null]
+  status varchar(24) [not null, default: 'active']
+
+  Note: '机器人运行的场地或园区'
+}
+
+Table floors {
+  id int [pk, increment]
+  facility_id int [not null, ref: > facilities.id]
+  name varchar(80) [not null]
+  level_order int [not null]
+}
+
+Table maps {
+  id int [pk, increment]
+  floor_id int [not null, ref: > floors.id]
+  name varchar(120) [not null]
+  version int [not null, default: 1]
+}
+
+Table waypoints {
+  id int [pk, increment]
+  map_id int [not null, ref: > maps.id]
+  name varchar(120) [not null]
+  x decimal(10,3)
+  y decimal(10,3)
+  is_charger boolean [not null, default: false]
+}
+
+Table lanes {
+  id int [pk, increment]
+  map_id int [not null, ref: > maps.id]
+  from_waypoint_id int [not null, ref: > waypoints.id]
+  to_waypoint_id int [not null, ref: > waypoints.id]
+  bidirectional boolean [not null, default: false]
+
+  Note: '地图中的可通行边，调度时用于路径规划与交通协调'
+}
+
+Table fleets {
+  id int [pk, increment]
+  facility_id int [not null, ref: > facilities.id]
+  name varchar(120) [not null]
+  adapter_type varchar(80) [not null]
+  status varchar(24) [not null, default: 'online']
+
+  Note: '通过车队适配器接入平台的异构机器人车队'
+}
+
+Table robots {
+  id int [pk, increment]
+  fleet_id int [not null, ref: > fleets.id]
+  current_waypoint_id int [ref: > waypoints.id]
+  name varchar(120) [not null]
+  model varchar(120)
+  status robot_status [not null, default: 'idle']
+  battery_percent decimal(5,2)
+  last_seen_at timestamp
+}
+
+Table tasks {
+  id int [pk, increment]
+  facility_id int [not null, ref: > facilities.id]
+  task_type varchar(80) [not null]
+  priority int [not null, default: 0]
+  status task_status [not null, default: 'queued']
+  requested_at timestamp [not null]
+  description text
+}
+
+Table bids {
+  id int [pk, increment]
+  task_id int [not null, ref: > tasks.id]
+  fleet_id int [not null, ref: > fleets.id]
+  estimated_cost decimal(12,2) [not null]
+  estimated_duration_seconds int [not null]
+  status varchar(24) [not null, default: 'proposed']
+  submitted_at timestamp [not null]
+}
+
+Table dispatches {
+  id int [pk, increment]
+  task_id int [not null, unique, ref: > tasks.id]
+  bid_id int [not null, ref: > bids.id]
+  robot_id int [not null, ref: > robots.id]
+  dispatched_at timestamp [not null]
+  completed_at timestamp
+}
+
+Table shared_resources {
+  id int [pk, increment]
+  facility_id int [not null, ref: > facilities.id]
+  name varchar(120) [not null]
+  resource_type resource_type [not null]
+  status varchar(24) [not null, default: 'available']
+
+  Note: '供多车队协调使用的门、电梯等建筑资源'
+}
+
+Table traffic_reservations {
+  id int [pk, increment]
+  robot_id int [not null, ref: > robots.id]
+  lane_id int [ref: > lanes.id]
+  shared_resource_id int [ref: > shared_resources.id]
+  starts_at timestamp [not null]
+  ends_at timestamp [not null]
+  status reservation_status [not null, default: 'requested']
+
+  Note: 'lane_id 与 shared_resource_id 表示一次通行预约涉及的路段或共享设施'
+}

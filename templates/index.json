@@ -20,6 +20,26 @@
       "file": "templates/flow/approval-flow.mmd",
       "version": "1.0.0",
       "updatedAt": "2026-10-07"
+    },
+    {
+      "id": "robot-scheduling-er",
+      "name": "机器人智能调度平台 · ER 模型",
+      "kind": "er",
+      "format": "dbml",
+      "description": "以多车队协同调度为场景，涵盖地图、车队、机器人、任务竞价、派发与通行资源。",
+      "file": "templates/er/robot-scheduling-platform.dbml",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-07"
+    },
+    {
+      "id": "robot-scheduling-flow",
+      "name": "机器人智能调度平台 · 任务流程",
+      "kind": "flow",
+      "format": "mermaid",
+      "description": "从任务校验、车队竞价与任务派发，到交通协调、设施协作和执行反馈。",
+      "file": "templates/flow/robot-scheduling-platform.mmd",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-07"
     }
   ]
 }
