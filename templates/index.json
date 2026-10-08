@@ -12,6 +12,16 @@
       "updatedAt": "2026-10-07"
     },
     {
+      "id": "approval-flow-drawio",
+      "name": "资料提交与审核",
+      "kind": "flow",
+      "format": "drawio",
+      "description": "资料提交后检查完整性，缺失时补充，完整后保存并完成。",
+      "file": "templates/flow/approval-flow.drawio",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-08"
+    },
+    {
       "id": "robot-scheduling-er",
       "name": "机器人智能调度平台 · ER 模型",
       "kind": "er",
@@ -30,6 +40,16 @@
       "file": "templates/flow/robot-scheduling-platform.mmd",
       "version": "1.0.0",
       "updatedAt": "2026-10-07"
+    },
+    {
+      "id": "robot-scheduling-flow-drawio",
+      "name": "机器人智能调度平台 · 任务流程",
+      "kind": "flow",
+      "format": "drawio",
+      "description": "从任务校验、车队竞价与任务派发，到交通协调、设施协作和执行反馈。",
+      "file": "templates/flow/robot-scheduling-platform.drawio",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-08"
     },
     {
       "id": "jetlinks-iot-er",
@@ -52,6 +72,16 @@
       "updatedAt": "2026-10-07"
     },
     {
+      "id": "jetlinks-iot-flow-drawio",
+      "name": "JetLinks 物联网平台 · 设备消息流程",
+      "kind": "flow",
+      "format": "drawio",
+      "description": "设备报文经网络组件和网关解码后进入消息总线，再同步状态、落库，并可能触发场景告警和通知。",
+      "file": "templates/flow/jetlinks-iot-platform.drawio",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-08"
+    },
+    {
       "id": "smart-space-operations-er",
       "name": "智慧空间协同运营 · ER 模型",
       "kind": "er",
@@ -70,6 +100,16 @@
       "file": "templates/flow/smart-space-operations.mmd",
       "version": "1.0.0",
       "updatedAt": "2026-10-07"
+    },
+    {
+      "id": "smart-space-operations-flow-drawio",
+      "name": "智慧空间协同运营 · 位置、设备与工单智能调度",
+      "kind": "flow",
+      "format": "drawio",
+      "description": "展示多源事件形成工单、汇聚人员资源画像，并通过硬约束可行性和软约束评分动态派工。",
+      "file": "templates/flow/smart-space-operations.drawio",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-08"
     },
     {
       "id": "smart-space-operations-architecture",
@@ -102,6 +142,16 @@
       "updatedAt": "2026-10-07"
     },
     {
+      "id": "property-service-agent-flow-drawio",
+      "name": "服务行业 AI Agent · 编排流程",
+      "kind": "flow",
+      "format": "drawio",
+      "description": "以 Agent 多分支编排为核心，展示会话记忆、RAG 检索、业务工具调用、重试和转人工。",
+      "file": "templates/flow/property-service-agent.drawio",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-08"
+    },
+    {
       "id": "enterprise-credit-financing-er",
       "name": "企业信用与融资服务 · ER 模型",
       "kind": "er",
@@ -122,6 +172,16 @@
       "updatedAt": "2026-10-07"
     },
     {
+      "id": "enterprise-credit-financing-flow-drawio",
+      "name": "企业信用与融资服务 · 业务流程",
+      "kind": "flow",
+      "format": "drawio",
+      "description": "展示授权采集、征信报告、现场核验、规则评估、机构协同和电子签署。",
+      "file": "templates/flow/enterprise-credit-financing.drawio",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-08"
+    },
+    {
       "id": "enterprise-data-cleansing-er",
       "name": "企业数据治理与 BI · ER 模型",
       "kind": "er",
@@ -140,6 +200,16 @@
       "file": "templates/flow/enterprise-data-cleansing.mmd",
       "version": "1.0.0",
       "updatedAt": "2026-10-07"
+    },
+    {
+      "id": "enterprise-data-cleansing-flow-drawio",
+      "name": "企业数据治理与 BI · 清洗流程",
+      "kind": "flow",
+      "format": "drawio",
+      "description": "展示接口数据落批、Spark 规则化清洗、质量问题记录和 BI 数据集发布。",
+      "file": "templates/flow/enterprise-data-cleansing.drawio",
+      "version": "1.0.0",
+      "updatedAt": "2026-10-08"
     }
   ]
 }

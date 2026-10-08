@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-10-07T00:00:00.000Z" agent="liktu-community" version="22.1.11" type="device" compressed="false">
+  <diagram id="smart-space-operations-architecture" name="智慧空间协同运营 · 调度系统架构">
+    <mxGraphModel dx="1400" dy="1080" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="app-boundary" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 6;strokeColor=#666666;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="1360" height="640" as="geometry" />
+        </mxCell>
+        <mxCell id="app-label" value="应用层" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rotation=-90;fontFamily=Microsoft YaHei;fontSize=20;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="25" y="290" width="80" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="planning-boundary" value="规划调度服务" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=2 3;strokeColor=#666666;fillColor=none;fontFamily=Microsoft YaHei;fontSize=18;fontStyle=1;fontColor=#3b5ccc;verticalAlign=top;spacingTop=12;" vertex="1" parent="1">
+          <mxGeometry x="115" y="55" width="1225" height="550" as="geometry" />
+        </mxCell>
+        <mxCell id="dispatch-cluster" value="智能派单集群" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=1.5;fontFamily=Microsoft YaHei;fontSize=17;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="245" y="130" width="260" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="solver-note" value="OptaPlanner 规划求解&lt;br&gt;元启发式搜索：Late Acceptance&lt;br&gt;硬约束保证可行，软约束比较方案得分" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1.5;fontFamily=Microsoft YaHei;fontSize=14;fontColor=#333333;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="555" y="120" width="340" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="best-plan" value="最优匹配方案&lt;br&gt;派工计划" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=1.5;fontFamily=Microsoft YaHei;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="970" y="130" width="250" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="distributed-scheduler" value="分布式任务调度" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;strokeWidth=1.5;fontFamily=Microsoft YaHei;fontSize=16;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="345" y="250" width="440" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="resource-pool" value="资源池（ES）&lt;br&gt;&lt;font style=&quot;font-size: 12px&quot;&gt;人员、技能、在岗状态、岗位等&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;strokeWidth=1.5;fontFamily=Microsoft YaHei;fontSize=16;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="200" y="365" width="270" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="task-cache" value="任务缓存池（Redis）&lt;br&gt;&lt;font style=&quot;font-size: 12px&quot;&gt;待排工单与任务上下文&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;strokeWidth=1.5;fontFamily=Microsoft YaHei;fontSize=16;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="610" y="365" width="270" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="dynamic-config" value="动态配置&lt;br&gt;&lt;font style=&quot;font-size: 12px&quot;&gt;约束参数、排程策略与业务维度&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=1.5;fontFamily=Microsoft YaHei;fontSize=16;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="350" y="500" width="380" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="resource-service" value="资源服务" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=2 3;strokeColor=#666666;fillColor=#ffffff;strokeWidth=1.5;fontFamily=Microsoft YaHei;fontSize=17;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="185" y="700" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="workorder-service" value="工单服务" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=2 3;strokeColor=#666666;fillColor=#ffffff;strokeWidth=1.5;fontFamily=Microsoft YaHei;fontSize=17;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="500" y="700" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="fm-service-caption" value="FM 工单服务" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=2 3;strokeColor=#666666;fillColor=#ffffff;strokeWidth=1.5;fontFamily=Microsoft YaHei;fontSize=17;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="985" y="700" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="infra-boundary" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 6;strokeColor=#666666;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="20" y="830" width="1360" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="infra-label" value="基础设施层" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rotation=-90;fontFamily=Microsoft YaHei;fontSize=20;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="25" y="915" width="100" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="source-boundary" value="业务数据源" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=2 3;strokeColor=#666666;fillColor=none;fontFamily=Microsoft YaHei;fontSize=15;fontStyle=1;verticalAlign=top;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="170" y="858" width="280" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="cloud-dispatch" value="云调度" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffffff;strokeColor=#6c8ebf;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="190" y="895" width="70" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="rm-data" value="RM" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffffff;strokeColor=#6c8ebf;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="275" y="895" width="70" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="fm-data" value="FM" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffffff;strokeColor=#6c8ebf;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="360" y="895" width="70" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="data-service" value="数据服务&lt;br&gt;&lt;font style=&quot;font-size: 12px&quot;&gt;ETL、清洗、聚合&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;strokeWidth=1.5;fontFamily=Microsoft YaHei;fontSize=16;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="545" y="890" width="220" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="subject-db" value="主题库" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffffff;strokeColor=#6c8ebf;strokeWidth=2;fontFamily=Microsoft YaHei;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="855" y="890" width="110" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="config-to-resource" value="抽取" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontFamily=Microsoft YaHei;fontSize=13;" edge="1" parent="1" source="dynamic-config" target="resource-pool"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="config-to-cache" value="抽取" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontFamily=Microsoft YaHei;fontSize=13;" edge="1" parent="1" source="dynamic-config" target="task-cache"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="resource-to-scheduler" value="资源画像" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontFamily=Microsoft YaHei;fontSize=13;" edge="1" parent="1" source="resource-pool" target="distributed-scheduler"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="cache-to-scheduler" value="待排任务" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontFamily=Microsoft YaHei;fontSize=13;" edge="1" parent="1" source="task-cache" target="distributed-scheduler"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="scheduler-to-cluster" value="构造规划问题" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontFamily=Microsoft YaHei;fontSize=13;" edge="1" parent="1" source="distributed-scheduler" target="dispatch-cluster"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="cluster-to-solver" value="求解" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontFamily=Microsoft YaHei;fontSize=13;" edge="1" parent="1" source="dispatch-cluster" target="solver-note"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="solver-to-plan" value="评分并择优" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontFamily=Microsoft YaHei;fontSize=13;" edge="1" parent="1" source="solver-note" target="best-plan"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="plan-to-fm" value="排程 / 派工" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontColor=#d9534f;fontFamily=Microsoft YaHei;fontSize=14;" edge="1" parent="1" source="best-plan" target="fm-service-caption"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="resource-up" value="项目维度、人员状态" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontFamily=Microsoft YaHei;fontSize=12;" edge="1" parent="1" source="resource-service" target="resource-pool"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="workorder-up" value="待处理工单" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontFamily=Microsoft YaHei;fontSize=12;" edge="1" parent="1" source="workorder-service" target="task-cache"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="sources-to-data" value="1、ETL" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontFamily=Microsoft YaHei;fontSize=13;" edge="1" parent="1" source="source-boundary" target="data-service"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="data-to-db" value="2、聚合" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontFamily=Microsoft YaHei;fontSize=13;" edge="1" parent="1" source="data-service" target="subject-db"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="db-to-resource" value="资源画像" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontFamily=Microsoft YaHei;fontSize=12;" edge="1" parent="1" source="subject-db" target="resource-service"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="db-to-workorder" value="工单维度" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;fontFamily=Microsoft YaHei;fontSize=12;" edge="1" parent="1" source="subject-db" target="workorder-service"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="architecture-note" value="行业化架构示意：组件边界和数据流用于说明方案思路，不代表特定系统的完整部署拓扑。" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Microsoft YaHei;fontSize=12;fontColor=#666666;" vertex="1" parent="1"><mxGeometry x="170" y="1015" width="1050" height="25" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
