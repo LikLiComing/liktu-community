@@ -12,6 +12,7 @@
 
 - `../templates/er/enterprise-credit-financing.dbml`：企业、报告、现场认证、融资申请、评估、合作机构匹配与电子合同。
 - `../templates/flow/enterprise-credit-financing.mmd`：授权采集、报告与认证、规则评估、机构流转和电子签署。
+- `../templates/flow/enterprise-credit-financing.drawio`：同一业务流程的可编辑图。Liktu 在线流程图打开这一份。
 
 ## 适用范围
 

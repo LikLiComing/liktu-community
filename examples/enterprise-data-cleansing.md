@@ -14,6 +14,7 @@
 
 - `../templates/er/enterprise-data-cleansing.dbml`：来源系统、采集批次、清洗任务、规则、质量问题、标准数据集和 BI 视图。
 - `../templates/flow/enterprise-data-cleansing.mmd`：从接口数据落批、Spark 清洗到质量记录和 BI 发布。
+- `../templates/flow/enterprise-data-cleansing.drawio`：同一清洗流程的可编辑图。Liktu 在线流程图打开这一份。
 
 ## 适用范围
 

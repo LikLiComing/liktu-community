@@ -18,6 +18,7 @@
 
 - `../templates/er/property-service-agent.dbml`：渠道、会话、消息、Agent 运行节点、知识库切片、工具调用和服务工单。
 - `../templates/flow/property-service-agent.mmd`：意图路由、RAG 检索、业务工具调用、失败重试与转人工。
+- `../templates/flow/property-service-agent.drawio`：同一编排流程的可编辑图。Liktu 在线流程图打开这一份。
 
 ## 适用范围
 
